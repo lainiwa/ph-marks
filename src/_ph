@@ -1,0 +1,230 @@
+#compdef _ph ph
+
+PH_BOOKMARKS_HOME=${PH_BOOKMARKS_HOME:-${HOME}/.pornhub}
+_PH_VIEW_LINK='https://www.pornhub.com/view_video.php?viewkey='
+
+
+_ph_parse_argument_to_link() {
+    local argument=${1}
+
+    # If argument is already a link - return it
+    if [[ ${argument} =~ ^${_PH_VIEW_LINK}.* ]]; then
+        echo "${argument}"
+    # if it seems to be a viewkey - convert it to a link
+    elif [[ ${argument} =~ ^[[:alnum:]]*$ ]]; then
+        echo "${_PH_VIEW_LINK}${argument}"
+    # otherwise fail
+    else
+        return 1
+    fi
+}
+
+
+_ph_slugify() {
+    local argument=$1
+    # Substitute spaces with underlines
+    argument=${argument// /_}
+    # Lowercase all letters
+    argument=${argument:l}
+    echo "${argument}"
+}
+
+
+_ph_count_intersections() {
+    comm -12 <(sort <<<"${1}") <(sort <<<"${2}") | wc --words
+}
+
+
+_get_video_ids() {
+    if [[ -t 0 ]]; then
+        _get_video_ids_files
+    else
+        cat /dev/stdin
+    fi
+}
+
+
+_get_video_ids_files() {
+    for file in "${PH_BOOKMARKS_HOME}"/*.json; do
+        echo "${file:t:r}"
+    done 2>/dev/null
+}
+
+
+_ph_keys() {
+    local keys=$1
+    # Categories we want to search
+    local categories_in_cmd=${*:2}
+    categories_in_cmd=${categories_in_cmd// /$'\n'}
+
+    local categories_in_file
+    local rating
+    local video_id
+    # How much the video matches the categories we search
+    while read -r video_id; do
+        # Categories listed in current file
+        categories_in_file=$(jq --raw-output ".${keys} | .[]" -- "${PH_BOOKMARKS_HOME}/${video_id}.json")
+        categories_in_file=$(_ph_slugify "${categories_in_file}")
+        # Get intersection of categories we search
+        # and categories we have listed in file
+        rating=$(_ph_count_intersections "${categories_in_cmd}" "${categories_in_file}")
+        if (( rating != 0 )); then
+            echo "${video_id}"
+        fi
+    done < <(_get_video_ids)
+}
+
+
+_ph_all_keys() {
+    local keys=$1
+    keys=$(jq --raw-output ".${keys} | .[]" "${PH_BOOKMARKS_HOME}"/*.json)
+    keys=$(sort | uniq <<<"${keys}")
+    _ph_slugify "${keys}"
+}
+
+
+_ph_add() {
+    local link
+
+    for argument in "$@"; do
+        # Convert argument to a link
+        if ! link=$(_ph_parse_argument_to_link "${argument}"); then
+            echo "Wrong id or link: ${argument}" >&2
+            continue
+        fi
+
+        # Get JSON data for appropriate video
+        local json
+        json=$(youtube-dl --dump-single-json -- "${link}")
+
+        # Save video under appropriate file name
+        local video_id
+        video_id=$(jq --raw-output '.id' <<<"${json}")
+        echo "${json}" >"${PH_BOOKMARKS_HOME}/${video_id}.json"
+    done
+}
+
+
+_ph_del() {
+    for video_id in "$@"; do
+        rm --verbose -- "${PH_BOOKMARKS_HOME}/${video_id}.json"
+    done
+}
+
+
+_ph_cat() {
+    _ph_keys 'categories' "$@"
+}
+
+
+_ph_tag() {
+    _ph_keys 'tags' "$@"
+}
+
+
+_ph_tit() {
+    # Categories we want to search
+    local search=$*
+    search=$(_ph_slugify "${search}")
+
+    local title
+    local video_id
+    # How much the video matches the categories we search
+    while read -r video_id; do
+        # Categories listed in current file
+        title=$(jq --raw-output '.title' -- "${PH_BOOKMARKS_HOME}/${video_id}.json")
+        title=$(_ph_slugify "${title}")
+
+        if [[ ${title} =~ "${search}" ]]; then
+           echo "${video_id}"
+        fi
+    done < <(_get_video_ids)
+}
+
+
+_ph_pri() {
+    local title
+    local video_id
+    while read -r video_id; do
+        printf '%s %s\n' \
+            "${_PH_VIEW_LINK}${video_id}" \
+            "$(jq '.title' -- "${PH_BOOKMARKS_HOME}/${video_id}.json")"
+    done < <(_get_video_ids)
+}
+
+
+_ph_lst() {
+    local video_id
+    while read -r video_id; do
+        echo "${video_id}"
+    done < <(_get_video_ids)
+}
+
+
+_ph() {
+    local -a commands
+
+    if ((CURRENT == 2)); then
+        commands=(
+            'add:Remember a video'
+            'del:Forget a video'
+            'cat:Search for categories'
+            'tag:Search for tags'
+            'tit:Search in title'
+            'lst:Just list all videos'
+        )
+        _describe -t commands 'subcommands' commands
+    fi
+
+    if ((CURRENT >= 3)); then
+        case ${words[2]} in
+        'add')
+            commands=()
+            _describe -t commands 'commands' commands
+            ;;
+        'del')
+            local prev_args=( ${(@f)words:2} )
+            local video_ids=( $(_get_video_ids_files) )
+            local possible_ids=( ${(@f)video_ids:|prev_args} )
+            commands=( "${(@f)$(
+                for id in "${possible_ids[@]}"; do
+                    printf "%s:%s\n" \
+                        "${id}" \
+                        "$(jq --raw-output '.title' "${PH_BOOKMARKS_HOME}/${id}.json")"
+                done
+            )}" )
+            _describe -t commands 'remembered videos' commands
+            ;;
+        'cat')
+            local prev_args=( ${(@f)words:2} )
+            local categories=( ${(@f)$(_ph_all_keys 'categories')} )
+            commands=( ${(@f)categories:|prev_args} )
+            _describe -t commands 'categories' commands
+            ;;
+        'tag')
+            local prev_args=( ${(@f)words:2} )
+            local tags=( ${(@f)$(_ph_all_keys 'tags')} )
+            commands=( ${(@f)tags:|prev_args} )
+            _describe -t commands 'tags' commands
+            ;;
+        esac
+    fi
+}
+
+
+ph() {
+    case "$1" in
+        add) _ph_add "${@:2}";;
+        del) _ph_del "${@:2}";;
+        cat) _ph_cat "${@:2}";;
+        tag) _ph_tag "${@:2}";;
+        tit) _ph_tit "${@:2}";;
+        lst) _ph_lst "${@:2}";;
+    esac |
+
+    if [[ -t 1 ]]; then
+        _ph_pri
+    else
+        cat
+    fi
+}
