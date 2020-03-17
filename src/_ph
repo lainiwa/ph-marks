@@ -107,7 +107,7 @@ _ph_add() {
 
 _ph_del() {
     for video_id in "$@"; do
-        rm --verbose -- "${PH_MARKS_HOME}/${video_id}.json"
+        rm --verbose -- "${PH_MARKS_HOME}/${video_id}.json" >&2
     done
 }
 
