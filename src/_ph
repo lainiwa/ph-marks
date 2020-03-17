@@ -8,7 +8,7 @@ _ph_parse_argument_to_link() {
     local argument=${1}
 
     # If argument is already a link - return it
-    if [[ ${argument} =~ ^${_PH_VIEW_LINK}.* ]]; then
+    if [[ ${argument} == *"${_PH_VIEW_LINK}"*  ]]; then
         echo "${argument}"
     # if it seems to be a viewkey - convert it to a link
     elif [[ ${argument} =~ ^[[:alnum:]]*$ ]]; then
