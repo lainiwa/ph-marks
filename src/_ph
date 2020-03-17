@@ -1,6 +1,6 @@
 #compdef _ph ph
 
-PH_BOOKMARKS_HOME=${PH_BOOKMARKS_HOME:-${HOME}/.pornhub}
+PH_MARKS_HOME=${PH_MARKS_HOME:-${HOME}/.pornhub}
 _PH_VIEW_LINK='https://www.pornhub.com/view_video.php?viewkey='
 
 
@@ -45,7 +45,7 @@ _get_video_ids() {
 
 
 _get_video_ids_files() {
-    for file in "${PH_BOOKMARKS_HOME}"/*.json; do
+    for file in "${PH_MARKS_HOME}"/*.json; do
         echo "${file:t:r}"
     done 2>/dev/null
 }
@@ -63,7 +63,7 @@ _ph_keys() {
     # How much the video matches the categories we search
     while read -r video_id; do
         # Categories listed in current file
-        categories_in_file=$(jq --raw-output ".${keys} | .[]" -- "${PH_BOOKMARKS_HOME}/${video_id}.json")
+        categories_in_file=$(jq --raw-output ".${keys} | .[]" -- "${PH_MARKS_HOME}/${video_id}.json")
         categories_in_file=$(_ph_slugify "${categories_in_file}")
         # Get intersection of categories we search
         # and categories we have listed in file
@@ -77,7 +77,7 @@ _ph_keys() {
 
 _ph_all_keys() {
     local keys=$1
-    keys=$(jq --raw-output ".${keys} | .[]" "${PH_BOOKMARKS_HOME}"/*.json)
+    keys=$(jq --raw-output ".${keys} | .[]" "${PH_MARKS_HOME}"/*.json)
     keys=$(sort | uniq <<<"${keys}")
     _ph_slugify "${keys}"
 }
@@ -100,14 +100,14 @@ _ph_add() {
         # Save video under appropriate file name
         local video_id
         video_id=$(jq --raw-output '.id' <<<"${json}")
-        echo "${json}" >"${PH_BOOKMARKS_HOME}/${video_id}.json"
+        echo "${json}" >"${PH_MARKS_HOME}/${video_id}.json"
     done
 }
 
 
 _ph_del() {
     for video_id in "$@"; do
-        rm --verbose -- "${PH_BOOKMARKS_HOME}/${video_id}.json"
+        rm --verbose -- "${PH_MARKS_HOME}/${video_id}.json"
     done
 }
 
@@ -132,7 +132,7 @@ _ph_tit() {
     # How much the video matches the categories we search
     while read -r video_id; do
         # Categories listed in current file
-        title=$(jq --raw-output '.title' -- "${PH_BOOKMARKS_HOME}/${video_id}.json")
+        title=$(jq --raw-output '.title' -- "${PH_MARKS_HOME}/${video_id}.json")
         title=$(_ph_slugify "${title}")
 
         if [[ ${title} =~ "${search}" ]]; then
@@ -148,7 +148,7 @@ _ph_pri() {
     while read -r video_id; do
         printf '%s %s\n' \
             "${_PH_VIEW_LINK}${video_id}" \
-            "$(jq '.title' -- "${PH_BOOKMARKS_HOME}/${video_id}.json")"
+            "$(jq '.title' -- "${PH_MARKS_HOME}/${video_id}.json")"
     done < <(_get_video_ids)
 }
 
@@ -190,7 +190,7 @@ _ph() {
                 for id in "${possible_ids[@]}"; do
                     printf "%s:%s\n" \
                         "${id}" \
-                        "$(jq --raw-output '.title' "${PH_BOOKMARKS_HOME}/${id}.json")"
+                        "$(jq --raw-output '.title' "${PH_MARKS_HOME}/${id}.json")"
                 done
             )}" )
             _describe -t commands 'remembered videos' commands
