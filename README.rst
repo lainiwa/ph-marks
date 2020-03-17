@@ -1,0 +1,33 @@
+
+=====================================
+Pornhub bookmarks manager at your CLI
+=====================================
+
+Installation
+############
+
+Install required dependencies using your package manager::
+
+    sudo apt install curl jq
+
+Install with your favourite zsh plugin manager::
+
+    zinit load lainiwa/ph-bookmarks
+
+
+Getting started
+###############
+
+Type ``ph <TAB>`` to see available subcommands.
+
+Let's add a new video to your porn library::
+
+    ph add 'https://www.pornhub.com/view_video.php?viewkey=ph5e6b2338e1256'
+
+The other option is specifying just the viewkey instead of a full link: ``ph add ph5e6b2338e1256``.
+
+Now list your available videos with the following command:
+
+.. code::
+    $ ph lst
+    https://www.pornhub.com/view_video.php?viewkey=ph5e6b2338e1256 "COVID-19: Russian medicine"
