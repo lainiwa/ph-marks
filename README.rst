@@ -29,5 +29,6 @@ The other option is specifying just the viewkey instead of a full link: ``ph add
 Now list your available videos with the following command:
 
 .. code::
+
     $ ph lst
     https://www.pornhub.com/view_video.php?viewkey=ph5e6b2338e1256 "COVID-19: Russian medicine"
