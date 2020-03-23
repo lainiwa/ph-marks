@@ -84,7 +84,11 @@ _ph_all_keys() {
 
 
 _ph_add() {
+    mkdir --parents -- "${PH_MARKS_HOME}"
+
     local link
+    local json
+    local video_id
 
     for argument in "$@"; do
         # Convert argument to a link
@@ -94,11 +98,9 @@ _ph_add() {
         fi
 
         # Get JSON data for appropriate video
-        local json
         json=$(youtube-dl --dump-single-json -- "${link}")
 
         # Save video under appropriate file name
-        local video_id
         video_id=$(jq --raw-output '.id' <<<"${json}")
         echo "${json}" >"${PH_MARKS_HOME}/${video_id}.json"
     done
