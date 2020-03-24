@@ -37,6 +37,21 @@ Now list your available videos with the following command:
     https://www.pornhub.com/view_video.php?viewkey=ph5e6b2338e1256 "COVID-19: Russian medicine"
 
 
+Configuration
+#############
+
+Configuration is being done via environment variables:
+
++---------------------+----------------+-------------------------+
+| Variable            |  Default value | Meaning                 |
++=====================+================+=========================+
+| PH_MARKS_HOME       | ~/.pornhub     | Directory with all the  |
+|                     |                | fetched video metadata. |
++---------------------+----------------+-------------------------+
+| PH_PARALLEL_FETCHES | 5              | Number of parallel      |
+|                     |                | metadata fetches        |
++---------------------+----------------+-------------------------+
+
 License
 #######
 ph-marks source is published under the terms of the `MIT license <LICENSE>`_.
