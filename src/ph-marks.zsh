@@ -1,6 +1,5 @@
 
 PH_MARKS_HOME=${PH_MARKS_HOME:-${HOME}/.pornhub}
-_PH_VIEW_LINK='https://www.pornhub.com/view_video.php?viewkey='
 
 
 _ph_slugify() {

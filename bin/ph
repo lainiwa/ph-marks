@@ -3,6 +3,9 @@
 source "${_PH_MARKS_PLUGIN_DIR}/src/ph-marks.zsh"
 
 
+_PH_VIEW_LINK='https://www.pornhub.com/view_video.php?viewkey='
+
+
 _ph_parse_argument_to_link() {
     local argument=${1}
 
