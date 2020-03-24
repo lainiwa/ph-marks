@@ -1,6 +1,6 @@
 
 =====================================
-Pornhub bookmarks manager at your CLI
+Pornhub Bookmarks Manager at Your CLI
 =====================================
 
 
@@ -16,7 +16,7 @@ Install with your favourite zsh plugin manager::
     zinit load lainiwa/ph-bookmarks
 
 
-Getting started
+Getting Started
 ###############
 
 Type ``ph <TAB>`` to see available subcommands.
