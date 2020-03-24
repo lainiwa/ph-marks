@@ -1,5 +1,6 @@
 
 PH_MARKS_HOME=${PH_MARKS_HOME:-${HOME}/.pornhub}
+PH_PARALLEL_FETCHES=${PH_PARALLEL_FETCHES:-5}
 
 
 _ph_slugify() {
