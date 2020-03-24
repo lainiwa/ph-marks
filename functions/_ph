@@ -1,0 +1,62 @@
+#compdef _ph ph
+
+source "${_PH_MARKS_PLUGIN_DIR}/src/ph-marks.zsh"
+
+
+_ph_all_keys() {
+    local keys=$1
+    keys=$(jq --raw-output ".${keys} | .[]" "${PH_MARKS_HOME}"/*.json)
+    keys=$(sort | uniq <<<"${keys}")
+    _ph_slugify "${keys}"
+}
+
+
+_ph() {
+    local -a commands
+
+    if ((CURRENT == 2)); then
+        commands=(
+            'add:Remember a video'
+            'del:Forget a video'
+            'cat:Search for categories'
+            'tag:Search for tags'
+            'tit:Search in title'
+            'lst:Just list all videos'
+        )
+        _describe -t commands 'subcommands' commands
+    fi
+
+    if ((CURRENT >= 3)); then
+        case ${words[2]} in
+        'add')
+            commands=()
+            _describe -t commands 'commands' commands
+            ;;
+        'del')
+            local prev_args=( ${(@f)words:2} )
+            local video_ids=( $(_get_video_ids_files) )
+            local possible_ids=( ${(@f)video_ids:|prev_args} )
+            commands=( "${(@f)$(
+                for id in "${possible_ids[@]}"; do
+                    printf "%s:%s\n" \
+                        "${id}" \
+                        "$(jq --raw-output '.title' "${PH_MARKS_HOME}/${id}.json")"
+                done
+            )}" )
+            _describe -t commands 'remembered videos' commands
+            ;;
+        'cat')
+            local prev_args=( ${(@f)words:2} )
+            local categories=( ${(@f)$(_ph_all_keys 'categories')} )
+            commands=( ${(@f)categories:|prev_args} )
+            _describe -t commands 'categories' commands
+            ;;
+        'tag')
+            local prev_args=( ${(@f)words:2} )
+            local tags=( ${(@f)$(_ph_all_keys 'tags')} )
+            commands=( ${(@f)tags:|prev_args} )
+            _describe -t commands 'tags' commands
+            ;;
+        esac
+    fi
+}
