@@ -37,13 +37,39 @@ Now list your available videos with the following command:
     $ ph lst
     https://www.pornhub.com/view_video.php?viewkey=ph5e6b2338e1256 "WHY Porn Changes the Brain | Science of NoFap [SFW]"
 
-Definitely not the video to be had in one's porn bookmarks! Let's delete it:
+Definitely not the video to be had in one's porn bookmarks :rofl:! Let's delete it:
 
 .. code-block:: console
 
     $ ph del ph5e6b2338e1256
 
 Note you can ``ph del <TAB>`` to insert the id of the video automatically.
+
+Now add a bunch of videos to our library (for educational reasons only):
+
+.. code-block:: console
+
+    $ ph add ph5c877ca9b5f1e ph5c877cecbb277 ph5c87cc007de24 \
+    ph5c2a66302d63c ph5c585ffeede61 \
+    ph5c0f6597271b0 ph5ddb8051f0d36
+
+Let's say you feel sapiosexual today. You can then issue a search by title:
+
+.. code-block:: console
+
+    $ ph tit facts and logic
+    https://www.pornhub.com/view_video.php?viewkey=ph5c0f6597271b0 "Ben Shapiro DESTROYS FEMALE LIBERAL WITH FACTS AND LOGIC"
+    https://www.pornhub.com/view_video.php?viewkey=ph5ddb8051f0d36 "Ben Shapiro gets BRUTALLY FUCKED by FACTS and LOGIC!!!!"
+
+You can pipe ``ph`` commands into each other to filter them even further:
+
+.. code-block:: console
+
+    $ ph tit facts and logic | ph cat anal
+    https://www.pornhub.com/view_video.php?viewkey=ph5c0f6597271b0 "Ben Shapiro DESTROYS FEMALE LIBERAL WITH FACTS AND LOGIC"
+
+Categories do not make sense sometimes...
+
 
 Configuration
 #############
