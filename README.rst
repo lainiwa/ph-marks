@@ -52,6 +52,21 @@ Configuration is being done via environment variables:
 |                     |                | metadata fetches        |
 +---------------------+----------------+-------------------------+
 
+
+Future Development
+##################
+
+ToDo List
+=========
+
+* Add fzf+ueberzug interactive filter.
+
+Known Issues
+============
+
+* It requires **two** ``<TAB>`` presses to issue completions for the first time for whatever reason.
+
+
 License
 #######
 ph-marks source is published under the terms of the `MIT license <LICENSE>`_.
