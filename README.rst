@@ -21,21 +21,29 @@ Getting Started
 
 Type ``ph <TAB>`` to see available subcommands.
 
-Let's add a new video to your porn library:
+Let's add a first video to your library:
 
 .. code-block:: console
 
     $ ph add 'https://www.pornhub.com/view_video.php?viewkey=ph5e6b2338e1256'
 
-The other option is specifying just the viewkey instead of a full link: ``ph add ph5e6b2338e1256``.
+The other option is specifying just the viewkey
+instead of a full link: ``ph add ph5e6b2338e1256``.
 
 Now list your available videos with the following command:
 
 .. code-block:: console
 
     $ ph lst
-    https://www.pornhub.com/view_video.php?viewkey=ph5e6b2338e1256 "COVID-19: Russian medicine"
+    https://www.pornhub.com/view_video.php?viewkey=ph5e6b2338e1256 "WHY Porn Changes the Brain | Science of NoFap [SFW]"
 
+Definitely not the video to be had in one's porn bookmarks! Let's delete it:
+
+.. code-block:: console
+
+    $ ph del ph5e6b2338e1256
+
+Note you can ``ph del <TAB>`` to insert the id of the video automatically.
 
 Configuration
 #############
