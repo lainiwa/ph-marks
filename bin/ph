@@ -2,6 +2,7 @@
 
 source "${_PH_MARKS_PLUGIN_DIR}/src/ph-marks.zsh"
 
+
 _ph_parse_argument_to_link() {
     local argument=${1}
 

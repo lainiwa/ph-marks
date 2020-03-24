@@ -5,7 +5,7 @@
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 0="${${(M)0:#/*}:-$PWD/$0}"
 
-_PH_MARKS_PLUGIN_DIR=$0:h
+export _PH_MARKS_PLUGIN_DIR=$0:h
 
 # source "${0:h}/functions/_ph"
 
