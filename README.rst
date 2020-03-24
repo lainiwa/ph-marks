@@ -68,7 +68,7 @@ You can pipe ``ph`` commands into each other to filter them even further:
     $ ph tit facts and logic | ph cat anal
     https://www.pornhub.com/view_video.php?viewkey=ph5c0f6597271b0 "Ben Shapiro DESTROYS FEMALE LIBERAL WITH FACTS AND LOGIC"
 
-Categories do not make sense sometimes...
+Categories do not make much sense sometimes...
 
 
 Configuration
@@ -93,7 +93,9 @@ Future Development
 ToDo List
 =========
 
-* Add fzf+ueberzug interactive filter.
+* Add fzf+ueberzug interactive filter;
+* Accept identificators from ``stdin`` in ``ph add`` and ``ph del``;
+* Partial subcommand names: ``ph t``, ``ph tit``, ``ph title`` and so on.
 
 Known Issues
 ============
