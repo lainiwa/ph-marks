@@ -7,8 +7,6 @@
 
 export _PH_MARKS_PLUGIN_DIR=$0:h
 
-# source "${0:h}/functions/_ph"
-
 if [[ $PMSPEC != *b* ]] {
   PATH=$PATH:"${0:h}/bin"
 }
