@@ -9,7 +9,7 @@ Installation
 
 Install required dependencies using your package manager::
 
-    sudo apt install curl jq
+    sudo apt install curl jq youtube-dl
 
 Install with your favourite zsh plugin manager::
 
