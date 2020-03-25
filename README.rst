@@ -1,7 +1,7 @@
 
-=====================================
-Pornhub Bookmarks Manager at Your CLI
-=====================================
+============================================
+:kiss: Pornhub Bookmarks Manager at Your CLI
+============================================
 
 
 Installation
