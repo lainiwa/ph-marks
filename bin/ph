@@ -150,14 +150,19 @@ _ph_lst() {
 
 
 ph() {
-    case "$1" in
-        add) _ph_add "${@:2}";;
-        del) _ph_del "${@:2}";;
-        cat) _ph_cat "${@:2}";;
-        tag) _ph_tag "${@:2}";;
-        tit) _ph_tit "${@:2}";;
-        lst) _ph_lst "${@:2}";;
-    esac |
+    if   [[ add      == $1* ]]; then
+        _ph_add "${@:2}"
+    elif [[ delete   == $1* ]]; then
+        _ph_del "${@:2}"
+    elif [[ category == $1* ]]; then
+        _ph_cat "${@:2}"
+    elif [[ tag      == $1* ]]; then
+        _ph_tag "${@:2}"
+    elif [[ title    == $1* ]]; then
+        _ph_tit "${@:2}"
+    elif [[ list     == $1* || ls == $1 || lst || $1 ]]; then
+        _ph_lst "${@:2}"
+    fi |
 
     if [[ -t 1 ]]; then
         _ph_pri

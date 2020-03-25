@@ -94,8 +94,7 @@ ToDo List
 =========
 
 * Add fzf+ueberzug interactive filter;
-* Accept identificators from ``stdin`` in ``ph add`` and ``ph del``;
-* Partial subcommand names: ``ph t``, ``ph tit``, ``ph title`` and so on.
+* Accept identificators from ``stdin`` in ``ph add`` and ``ph del``.
 
 Known Issues
 ============

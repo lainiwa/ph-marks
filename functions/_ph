@@ -17,22 +17,21 @@ _ph() {
     if ((CURRENT == 2)); then
         commands=(
             'add:Remember a video'
-            'del:Forget a video'
-            'cat:Search for categories'
+            'delete:Forget a video'
+            'category:Search for categories'
             'tag:Search for tags'
-            'tit:Search in title'
-            'lst:Just list all videos'
+            'title:Search in title'
+            'list:Just list all videos'
         )
         _describe -t commands 'subcommands' commands
     fi
 
     if ((CURRENT >= 3)); then
-        case ${words[2]} in
-        'add')
+        if   [[ add      == ${words[2]}* ]]; then
             commands=()
             _describe -t commands 'commands' commands
-            ;;
-        'del')
+
+        elif [[ delete   == ${words[2]}* ]]; then
             local prev_args=( ${(@f)words:2} )
             local video_ids=( $(_get_video_ids_files) )
             local possible_ids=( ${(@f)video_ids:|prev_args} )
@@ -44,19 +43,25 @@ _ph() {
                 done
             )}" )
             _describe -t commands 'remembered videos' commands
-            ;;
-        'cat')
+
+        elif [[ category == ${words[2]}* ]]; then
             local prev_args=( ${(@f)words:2} )
             local categories=( ${(@f)$(_ph_all_keys 'categories')} )
             commands=( ${(@f)categories:|prev_args} )
             _describe -t commands 'categories' commands
-            ;;
-        'tag')
+
+        elif [[ tag      == ${words[2]}* ]]; then
             local prev_args=( ${(@f)words:2} )
             local tags=( ${(@f)$(_ph_all_keys 'tags')} )
             commands=( ${(@f)tags:|prev_args} )
             _describe -t commands 'tags' commands
-            ;;
-        esac
+
+        elif [[ title    == ${words[2]}* ]]; then
+            :
+
+        elif [[ list     == ${words[2]}* || ls == ${words[2]} || lst || ${words[2]} ]]; then
+            :
+
+        fi
     fi
 }
