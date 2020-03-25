@@ -77,19 +77,21 @@ Configuration
 
 Configuration is being done via environment variables:
 
-+--------------------------+---------------------------+-------------------------+
-| Variable                 |  Default value            | Meaning                 |
-+==========================+===========================+=========================+
-| PH_MARKS_HOME            | ~/.pornhub                | Directory with all the  |
-|                          |                           | fetched video metadata  |
-+--------------------------+---------------------------+-------------------------+
-| PH_MARKS_PARALLELIZATION | 5                         | Number of parallel      |
-|                          |                           | metadata fetches        |
-+--------------------------+---------------------------+-------------------------+
-| PH_MARKS_BROWSER_CMD     | firefox --private,        | Command to use to open  |
-|                          | chrom{e,ium} --incognito, | a link in browser       |
-|                          | or xdg-open (it depends)  |                         |
-+--------------------------+---------------------------+-------------------------+
++--------------------------+-----------------------------+-------------------------+
+| Variable                 |  Default value              | Meaning                 |
++==========================+=============================+=========================+
+| PH_MARKS_HOME            | ~/.pornhub                  | Directory with all the  |
+|                          |                             | fetched video metadata  |
++--------------------------+-----------------------------+-------------------------+
+| PH_MARKS_PARALLELIZATION | 5                           | Number of parallel      |
+|                          |                             | metadata fetches        |
++--------------------------+-----------------------------+-------------------------+
+| PH_MARKS_BROWSER_CMD     | Auto detection:             | Command to use to open  |
+|                          |                             | a link in browser       |
+|                          | * firefox --private         |                         |
+|                          | * chrom{e,ium} --incognito  |                         |
+|                          | * xdg-open                  |                         |
++--------------------------+-----------------------------+-------------------------+
 
 
 Examples
