@@ -86,7 +86,7 @@ _ph_add() {
     # https://unix.stackexchange.com/a/216475
     (
     for argument in "$@"; do
-       (( i=i%PH_PARALLEL_FETCHES )); (( i++==0 )) && wait
+       (( i=i%PH_MARKS_PARALLELIZATION )); (( i++==0 )) && wait
        _ph_add_single "${argument}" &
     done
     )

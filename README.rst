@@ -77,15 +77,15 @@ Configuration
 
 Configuration is being done via environment variables:
 
-+---------------------+----------------+-------------------------+
-| Variable            |  Default value | Meaning                 |
-+=====================+================+=========================+
-| PH_MARKS_HOME       | ~/.pornhub     | Directory with all the  |
-|                     |                | fetched video metadata. |
-+---------------------+----------------+-------------------------+
-| PH_PARALLEL_FETCHES | 5              | Number of parallel      |
-|                     |                | metadata fetches        |
-+---------------------+----------------+-------------------------+
++--------------------------+----------------+-------------------------+
+| Variable                 |  Default value | Meaning                 |
++==========================+================+=========================+
+| PH_MARKS_HOME            | ~/.pornhub     | Directory with all the  |
+|                          |                | fetched video metadata. |
++--------------------------+----------------+-------------------------+
+| PH_MARKS_PARALLELIZATION | 5              | Number of parallel      |
+|                          |                | metadata fetches        |
++--------------------------+----------------+-------------------------+
 
 
 Future Development
