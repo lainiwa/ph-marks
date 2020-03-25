@@ -18,6 +18,7 @@ _ph() {
         commands=(
             'add:Remember a video'
             'delete:Forget a video'
+            'open:Open a video'
             'category:Search for categories'
             'tag:Search for tags'
             'title:Search in title'
@@ -31,7 +32,7 @@ _ph() {
             commands=()
             _describe -t commands 'commands' commands
 
-        elif [[ delete   == ${words[2]}* ]]; then
+        elif [[ delete   == ${words[2]}* || open == ${words[2]}* ]]; then
             local prev_args=( ${(@f)words:2} )
             local video_ids=( $(_get_video_ids_files) )
             local possible_ids=( ${(@f)video_ids:|prev_args} )

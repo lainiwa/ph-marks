@@ -110,7 +110,31 @@ _ph_args_and_stdin() {
 _ph_del() {
     while read -r video_id; do
         rm --verbose -- "${PH_MARKS_HOME}/${video_id}.json" >&2
-        # echo rm --verbose -- "${PH_MARKS_HOME}/${video_id}.json" >&2
+    done < <(_ph_args_and_stdin "$@")
+}
+
+
+_ph_open() {
+    local browser_cmd
+
+    if [[ -z ${PH_MARKS_BROWSER_CMD} ]]; then
+        if [[ ${BROWSER} == firefox ]]; then
+            browser_cmd="${BROWSER} --private"
+        elif [[ ${BROWSER} == chrom* ]]; then
+            browser_cmd="${BROWSER} --incognito"
+        elif [[ ${$(xdg-settings get default-web-browser)/.desktop/} == firefox ]]; then
+            browser_cmd="${$(xdg-settings get default-web-browser)/.desktop/} --private"
+        elif [[ ${$(xdg-settings get default-web-browser)/.desktop/} == chrom* ]]; then
+            browser_cmd="${$(xdg-settings get default-web-browser)/.desktop/} --incognito"
+        else
+            browser_cmd="xdg-open"
+        fi
+    else
+        browser_cmd=${PH_MARKS_BROWSER_CMD}
+    fi
+
+    while read -r video_id; do
+        eval "nohup ${browser_cmd} '$(_ph_parse_argument_to_link "${video_id}")'" >&2 &
     done < <(_ph_args_and_stdin "$@")
 }
 
@@ -167,6 +191,8 @@ _ph_lst() {
 ph() {
     if   [[ add      == $1* ]]; then
         _ph_add "${@:2}"
+    elif [[ open     == $1* ]]; then
+        _ph_open "${@:2}"
     elif [[ delete   == $1* ]]; then
         _ph_del "${@:2}"
     elif [[ category == $1* ]]; then
