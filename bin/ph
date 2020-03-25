@@ -93,10 +93,25 @@ _ph_add() {
 }
 
 
-_ph_del() {
+_ph_args_and_stdin() {
+    # Return args
     for video_id in "$@"; do
-        rm --verbose -- "${PH_MARKS_HOME}/${video_id}.json" >&2
+        echo "${video_id}"
     done
+    # Concat video ids from stdin to args stream
+    if [[ ! -t 0 ]]; then
+        while read -r video_id; do
+            echo "${video_id}"
+        done
+    fi
+}
+
+
+_ph_del() {
+    while read -r video_id; do
+        rm --verbose -- "${PH_MARKS_HOME}/${video_id}.json" >&2
+        # echo rm --verbose -- "${PH_MARKS_HOME}/${video_id}.json" >&2
+    done < <(_ph_args_and_stdin "$@")
 }
 
 

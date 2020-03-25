@@ -109,7 +109,6 @@ ToDo List
 =========
 
 * Add fzf+ueberzug interactive filter;
-* Accept identificators from ``stdin`` in ``ph add`` and ``ph del``.
 
 Known Issues
 ============
