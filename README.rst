@@ -13,7 +13,7 @@ Install required dependencies using your package manager::
 
 Install with your favourite zsh plugin manager::
 
-    zinit load lainiwa/ph-bookmarks
+    zinit load lainiwa/ph-marks
 
 
 Getting Started
