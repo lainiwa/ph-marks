@@ -1,5 +1,7 @@
 #!/usr/bin/env zsh
 
+PH_MARKS_HOME=${PH_MARKS_HOME:-${HOME}/.pornhub}
+
 readonly CURRENT=$(readlink -f "${BASH_SOURCE:-$0}")
 readonly REDRAW_KEY="µ"
 declare -r -x UEBERZUG_FIFO=${UEBERZUG_FIFO:-$(mktemp --dry-run --suffix "fzf-x-ueberzug")}
@@ -20,11 +22,9 @@ start_ueberzug() {
 }
 
 
-ueberzug_command() {
-    # Get sizes of current terminal: [n_columns, n_rows]
-    #
-    local sizes=($(</dev/tty stty size))
-    local terminal_columns=${sizes[1]}
+draw_preview() {
+    local args=($1)
+    local file=${${(z)args}[1]}
 
     COLUMNS=$(( COLUMNS - 4 ))
     LINES=$(( LINES / 2 - 2 ))
@@ -39,20 +39,12 @@ ueberzug_command() {
         scaler "fit_contain"
         scaling_position_x "0.5"
         scaling_position_y "0.5"
-        path "${*}"
+        path "${file}"
     )
 
     logg "DRAW: <${cmds[*]}>"
 
-    IFS=$'\t'; cat <<<"${cmds[*]}"
-}
-
-
-draw_preview() {
-    local size=($(</dev/tty stty size))
-    local terminal_columns=${size[1]}
-
-    ueberzug_command "$@" >"${UEBERZUG_FIFO}"
+    IFS=$'\t'; cat <<<"${cmds[*]}" >"${UEBERZUG_FIFO}"
 }
 
 
@@ -80,12 +72,20 @@ main() {
 
     start_ueberzug
 
-    ls ~/.pornhub/*.json |
+    for file in "${PH_MARKS_HOME}"/*.jpg; do
+        echo "${file}" "$(jq --raw-output '.title' -- "${file:r}.info.json")"
+    done |
+
     fzf --preview "${CURRENT} draw_preview {}" \
         --preview-window "up" \
         --bind "${REDRAW_KEY}:toggle-preview+toggle-preview" \
         --multi \
-        "${@}"
+        --with-nth 2.. \
+        "${@}" |
+
+    while read -r line; do
+        echo "${${line%% *}:t:r}"
+    done
 }
 
 

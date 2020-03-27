@@ -19,6 +19,7 @@ _ph() {
             'add:Remember a video'
             'category:Search for categories'
             'delete:Forget a video'
+            'fzf:Fuzzy pick a video'
             'list:Just list all videos'
             'open:Open a video'
             'tag:Search for tags'

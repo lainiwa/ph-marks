@@ -178,6 +178,12 @@ _PH_VIEW_LINK='https://www.pornhub.com/view_video.php?viewkey='
 }
 
 
+.ph_fzf() {
+    "${_PH_MARKS_PLUGIN_DIR}/src/fzfimg" main \
+        < <(.ph_stdin_viewkeys || .ph_files_viewkeys)
+}
+
+
 ph() {
     if   [[ add      == $1* ]]; then
         .ph_add "${@:2}"
@@ -196,6 +202,8 @@ ph() {
         .ph_keys tags "${@:2}"
     elif [[ title    == $1* ]]; then
         .ph_title "${@:2}"
+    elif [[ fuzzy    == $1* || fzf == $1* ]]; then
+        .ph_fzf
     fi |
         .ph_pretty_print
 }
