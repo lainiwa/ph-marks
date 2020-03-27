@@ -5,9 +5,9 @@ source "${_PH_MARKS_PLUGIN_DIR}/src/ph-marks.zsh"
 
 _ph_all_keys() {
     local keys=$1
-    keys=$(jq --raw-output ".${keys} | .[]" "${PH_MARKS_HOME}"/*.json)
+    keys=$(jq --raw-output ".${keys} | .[]" "${PH_MARKS_HOME}"/*.info.json)
     keys=$(sort | uniq <<<"${keys}")
-    _ph_slugify "${keys}"
+    .ph_slugify "${keys}"
 }
 
 
@@ -17,12 +17,12 @@ _ph() {
     if ((CURRENT == 2)); then
         commands=(
             'add:Remember a video'
-            'delete:Forget a video'
-            'open:Open a video'
             'category:Search for categories'
+            'delete:Forget a video'
+            'list:Just list all videos'
+            'open:Open a video'
             'tag:Search for tags'
             'title:Search in title'
-            'list:Just list all videos'
         )
         _describe -t commands 'subcommands' commands
     fi
@@ -34,13 +34,13 @@ _ph() {
 
         elif [[ delete   == ${words[2]}* || open == ${words[2]}* ]]; then
             local prev_args=( ${(@f)words:2} )
-            local video_ids=( $(_get_video_ids_files) )
+            local video_ids=( $(.ph_files_viewkeys) )
             local possible_ids=( ${(@f)video_ids:|prev_args} )
             commands=( "${(@f)$(
                 for id in "${possible_ids[@]}"; do
                     printf "%s:%s\n" \
                         "${id}" \
-                        "$(jq --raw-output '.title' "${PH_MARKS_HOME}/${id}.json")"
+                        "$(jq --raw-output '.title' "${PH_MARKS_HOME}/${id}.info.json")"
                 done
             )}" )
             _describe -t commands 'remembered videos' commands
@@ -60,7 +60,7 @@ _ph() {
         elif [[ title    == ${words[2]}* ]]; then
             :
 
-        elif [[ list     == ${words[2]}* || ls == ${words[2]} || lst || ${words[2]} ]]; then
+        elif [[ list     == ${words[2]}* || ls == ${words[2]} || lst == ${words[2]} ]]; then
             :
 
         fi

@@ -6,14 +6,18 @@ source "${_PH_MARKS_PLUGIN_DIR}/src/ph-marks.zsh"
 _PH_VIEW_LINK='https://www.pornhub.com/view_video.php?viewkey='
 
 
-_ph_parse_argument_to_link() {
-    local argument=${1}
+.ph_count_intersections() {
+    comm -12 <(sort <<<"${1}") <(sort <<<"${2}") | wc --words
+}
 
+
+.ph_parse_argument_to_link() {
+    local argument=${1}
     # If argument is already a link - return it
     if [[ ${argument} == *"${_PH_VIEW_LINK}"*  ]]; then
         echo "${argument}"
     # if it seems to be a viewkey - convert it to a link
-    elif [[ ${argument} =~ ^[[:alnum:]]*$ ]]; then
+    elif .ph_is_viewkey "${argument}"; then
         echo "${_PH_VIEW_LINK}${argument}"
     # otherwise fail
     else
@@ -22,21 +26,59 @@ _ph_parse_argument_to_link() {
 }
 
 
-_ph_count_intersections() {
-    comm -12 <(sort <<<"${1}") <(sort <<<"${2}") | wc --words
-}
-
-
-_get_video_ids() {
-    if [[ -t 0 ]]; then
-        _get_video_ids_files
-    else
-        cat /dev/stdin
+.ph_add_single() {
+    local argument=$1
+    # Convert argument to a link
+    local link
+    if ! link=$(.ph_parse_argument_to_link "${argument}"); then
+        echo "Impossible viewkey/video link: ${argument}" >&2
+        return 1
     fi
+    # Viewkey is a number in a link after `=`
+    local viewkey=${link#*=}
+    # Create                 ~/.pornhub
+    # Save video thumbnail   ~/.pornhub/ph123456789abcd.jpg
+    # and file with metadata ~/.pornhub/ph123456789abcd.info.json
+    # if not yet saved
+    youtube-dl --write-info-json \
+               --write-thumbnail \
+               --skip-download \
+               --no-overwrites \
+               --quiet \
+               --output "${PH_MARKS_HOME}/${viewkey}" \
+               -- "${link}" 2>/dev/null
 }
 
 
-_ph_keys() {
+.ph_add() {
+    # Add each passed viewkey/link, running the jobs concurrently
+    # with PH_MARKS_PARALLELIZATION=5
+    # Source:
+    #     https://unix.stackexchange.com/a/436713
+    for argument in "$@"; do
+        # Download in background
+        ( if ! .ph_add_single "${argument}"; then
+            echo "Could not parse and download \"${argument}\"" >&2
+        fi ) &
+        # Allow only to execute PH_MARKS_PARALLELIZATION jobs in parallel
+        if [[ $(jobs -r -p | wc -l) -gt ${PH_MARKS_PARALLELIZATION} ]]; then
+            # wait only for first job
+            wait -n
+        fi
+    done
+    # Wait for pending jobs
+    wait
+}
+
+
+.ph_delete() {
+    while read -r viewkey; do
+        rm --verbose -- "${PH_MARKS_HOME}/${viewkey}"* >&2
+    done < <(.ph_stdin_viewkeys || .ph_args_viewkeys "$@")
+}
+
+
+.ph_keys() {
     local keys=$1
     # Categories we want to search
     local categories_in_cmd=${*:2}
@@ -44,172 +86,118 @@ _ph_keys() {
 
     local categories_in_file
     local rating
-    local video_id
+    local viewkey
     # How much the video matches the categories we search
-    while read -r video_id; do
+    while read -r viewkey; do
         # Categories listed in current file
-        categories_in_file=$(jq --raw-output ".${keys} | .[]" -- "${PH_MARKS_HOME}/${video_id}.json")
-        categories_in_file=$(_ph_slugify "${categories_in_file}")
+        categories_in_file=$(jq --raw-output ".${keys} | .[]" -- "${PH_MARKS_HOME}/${viewkey}.info.json")
+        categories_in_file=$(.ph_slugify "${categories_in_file}")
         # Get intersection of categories we search
         # and categories we have listed in file
-        rating=$(_ph_count_intersections "${categories_in_cmd}" "${categories_in_file}")
+        rating=$(.ph_count_intersections "${categories_in_cmd}" "${categories_in_file}")
         if (( rating != 0 )); then
-            echo "${video_id}"
+            echo "${viewkey}"
         fi
-    done < <(_get_video_ids)
+    done < <(.ph_stdin_viewkeys || .ph_files_viewkeys)
 }
 
 
-_ph_add_single() {
-    # Convert argument to a link
-    local argument=$1
-    local link
-    if ! link=$(_ph_parse_argument_to_link "${argument}"); then
-        echo "Wrong id or link: ${argument}" >&2
-        continue
-    fi
-
-    # Get JSON data for appropriate video
-    local json
-    json=$(youtube-dl --dump-single-json -- "${link}")
-
-    # Save video under appropriate file name
-    local video_id
-    video_id=$(jq --raw-output '.id' <<<"${json}")
-    echo "${json}" >"${PH_MARKS_HOME}/${video_id}.json"
-}
-
-
-_ph_add() {
-    mkdir --parents -- "${PH_MARKS_HOME}"
-
-    # https://unix.stackexchange.com/a/216475
-    (
-    for argument in "$@"; do
-       (( i=i%PH_MARKS_PARALLELIZATION )); (( i++==0 )) && wait
-       _ph_add_single "${argument}" &
-    done
-    )
-}
-
-
-_ph_args_and_stdin() {
-    # Return args
-    for video_id in "$@"; do
-        echo "${video_id}"
-    done
-    # Concat video ids from stdin to args stream
-    if [[ ! -t 0 ]]; then
+.ph_pretty_print() {
+    { .ph_stdin_viewkeys || .ph_files_viewkeys } |
+    if [[ -t 1 ]]; then
+        local title
+        local video_id
         while read -r video_id; do
-            echo "${video_id}"
+            printf '%s %s\n' \
+                "${_PH_VIEW_LINK}${video_id}" \
+                "$(jq '.title' -- "${PH_MARKS_HOME}/${video_id}.info.json")"
         done
-    fi
-}
-
-
-_ph_del() {
-    while read -r video_id; do
-        rm --verbose -- "${PH_MARKS_HOME}/${video_id}.json" >&2
-    done < <(_ph_args_and_stdin "$@")
-}
-
-
-_ph_open() {
-    local browser_cmd
-
-    if [[ -z ${PH_MARKS_BROWSER_CMD} ]]; then
-        if [[ ${BROWSER} == firefox ]]; then
-            browser_cmd="${BROWSER} --private"
-        elif [[ ${BROWSER} == chrom* ]]; then
-            browser_cmd="${BROWSER} --incognito"
-        elif [[ ${$(xdg-settings get default-web-browser)/.desktop/} == firefox ]]; then
-            browser_cmd="${$(xdg-settings get default-web-browser)/.desktop/} --private"
-        elif [[ ${$(xdg-settings get default-web-browser)/.desktop/} == chrom* ]]; then
-            browser_cmd="${$(xdg-settings get default-web-browser)/.desktop/} --incognito"
-        else
-            browser_cmd="xdg-open"
-        fi
     else
-        browser_cmd=${PH_MARKS_BROWSER_CMD}
+        cat
     fi
-
-    while read -r video_id; do
-        eval "nohup ${browser_cmd} '$(_ph_parse_argument_to_link "${video_id}")'" >&2 &
-    done < <(_ph_args_and_stdin "$@")
 }
 
 
-_ph_cat() {
-    _ph_keys 'categories' "$@"
-}
-
-
-_ph_tag() {
-    _ph_keys 'tags' "$@"
-}
-
-
-_ph_tit() {
+.ph_title() {
     # Categories we want to search
     local search=$*
-    search=$(_ph_slugify "${search}")
+    search=$(.ph_slugify "${search}")
 
     local title
-    local video_id
+    local viewkey
     # How much the video matches the categories we search
-    while read -r video_id; do
+    while read -r viewkey; do
         # Categories listed in current file
-        title=$(jq --raw-output '.title' -- "${PH_MARKS_HOME}/${video_id}.json")
-        title=$(_ph_slugify "${title}")
+        title=$(jq --raw-output '.title' -- "${PH_MARKS_HOME}/${viewkey}.info.json")
+        title=$(.ph_slugify "${title}")
 
         if [[ ${title} =~ "${search}" ]]; then
-           echo "${video_id}"
+           echo "${viewkey}"
         fi
-    done < <(_get_video_ids)
+    done < <(.ph_stdin_viewkeys || .ph_files_viewkeys)
 }
 
 
-_ph_pri() {
-    local title
-    local video_id
-    while read -r video_id; do
-        printf '%s %s\n' \
-            "${_PH_VIEW_LINK}${video_id}" \
-            "$(jq '.title' -- "${PH_MARKS_HOME}/${video_id}.json")"
-    done < <(_get_video_ids)
+.ph_browser_cmd() {
+    local browser
+    # Find out default browser
+    if [[ -n ${BROWSER} ]]; then
+        browser=${BROWSER}
+    elif (( $+commands[xdg-settings] )); then
+        browser=${$(BROWSER= xdg-settings get default-web-browser)/.desktop/}
+    else
+        echo "No browser set via either XDG or \$BROWSER" >&2
+        return 1
+    fi
+    # Add a --private/--incognito flag to the browser command
+    case "${browser}" in
+        *fox)
+            echo "${browser} --private";;
+        brave*|chrom*)
+            echo "${browser} --incognito";;
+        tor*)
+            echo "${browser}";;
+        *)
+            echo "How do we open a private window in your browser?" >&2
+            return 1
+            ;;
+    esac
 }
 
 
-_ph_lst() {
-    local video_id
-    while read -r video_id; do
-        echo "${video_id}"
-    done < <(_get_video_ids)
+.ph_open() {
+    local viewkeys
+    viewkeys=($(.ph_stdin_viewkeys || .ph_args_viewkeys "$@"))
+    local links
+    links=($(for viewkey in "${viewkeys[@]}"; do
+        echo "${_PH_VIEW_LINK}${viewkey}"
+    done))
+    local browser
+    browser=(${PH_MARKS_BROWSER_CMD:-$(.ph_browser_cmd)})
+    nohup ${browser[@]} ${links[@]} &>/dev/null &
 }
 
 
 ph() {
     if   [[ add      == $1* ]]; then
-        _ph_add "${@:2}"
-    elif [[ open     == $1* ]]; then
-        _ph_open "${@:2}"
-    elif [[ delete   == $1* ]]; then
-        _ph_del "${@:2}"
+        .ph_add "${@:2}"
     elif [[ category == $1* ]]; then
-        _ph_cat "${@:2}"
+        .ph_keys categories "${@:2}"
+    elif [[ delete   == $1* ]]; then
+        .ph_delete "${@:2}"
+    elif [[ list     == $1* || ls == $1 || lst == $1 ]]; then
+        .ph_files_viewkeys
+    elif [[ open     == $1* ]]; then
+        .ph_open "${@:2}"
+    elif [[ t        == $1  ]]; then
+        echo '"tag" or "title"?' >&2
+        return 1
     elif [[ tag      == $1* ]]; then
-        _ph_tag "${@:2}"
+        .ph_keys tags "${@:2}"
     elif [[ title    == $1* ]]; then
-        _ph_tit "${@:2}"
-    elif [[ list     == $1* || ls == $1 || lst || $1 ]]; then
-        _ph_lst "${@:2}"
+        .ph_title "${@:2}"
     fi |
-
-    if [[ -t 1 ]]; then
-        _ph_pri
-    else
-        cat
-    fi
+        .ph_pretty_print
 }
 
 
