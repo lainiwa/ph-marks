@@ -90,7 +90,7 @@ Configuration is being done via environment variables:
 |                          |                             | a link in browser       |
 |                          | * firefox --private         |                         |
 |                          | * chrom{e,ium} --incognito  |                         |
-|                          | * xdg-open                  |                         |
+|                          | * etc                       |                         |
 +--------------------------+-----------------------------+-------------------------+
 
 
@@ -127,7 +127,8 @@ ToDo List
 Known Issues
 ============
 
-* It requires **two** ``<TAB>`` presses to issue completions for the first time for whatever reason.
+1. It requires **two** ``<TAB>`` presses to issue completions for the first time for whatever reason;
+2. Calling browser starts browser in foreground.
 
 
 License
