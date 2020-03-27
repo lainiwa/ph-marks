@@ -1,0 +1,92 @@
+#!/usr/bin/env zsh
+
+readonly CURRENT=$(readlink -f "${BASH_SOURCE:-$0}")
+readonly REDRAW_KEY="µ"
+declare -r -x UEBERZUG_FIFO=${UEBERZUG_FIFO:-$(mktemp --dry-run --suffix "fzf-x-ueberzug")}
+
+
+logg() {
+    echo "log> $*" >> ~/tmp/log
+}
+
+
+start_ueberzug() {
+    logg "========= DAEMON ========="
+
+    mkfifo "${UEBERZUG_FIFO}"
+    ueberzug layer --parser simple --silent <"${UEBERZUG_FIFO}" &
+    # prevent EOF
+    exec 3>"${UEBERZUG_FIFO}"
+}
+
+
+ueberzug_command() {
+    # Get sizes of current terminal: [n_columns, n_rows]
+    #
+    local sizes=($(</dev/tty stty size))
+    local terminal_columns=${sizes[1]}
+
+    COLUMNS=$(( COLUMNS - 4 ))
+    LINES=$(( LINES / 2 - 2 ))
+
+    cmds=(
+        action "add"
+        identifier "preview"
+        x "1"
+        y "1"
+        width "${COLUMNS}"
+        height "${LINES}"
+        scaler "fit_contain"
+        scaling_position_x "0.5"
+        scaling_position_y "0.5"
+        path "${*}"
+    )
+
+    logg "DRAW: <${cmds[*]}>"
+
+    IFS=$'\t'; cat <<<"${cmds[*]}"
+}
+
+
+draw_preview() {
+    local size=($(</dev/tty stty size))
+    local terminal_columns=${size[1]}
+
+    ueberzug_command "$@" >"${UEBERZUG_FIFO}"
+}
+
+
+print_on_winch() {
+
+    perl -e '
+        require "sys/ioctl.ph";
+        while (1) {
+            local $SIG{WINCH} = sub {
+                ioctl(STDIN, &TIOCSTI, $_) for split "", join " ", @ARGV;
+            };
+            sleep;
+        }' \
+        "${@}" </dev/tty &
+
+    echo $!
+}
+
+
+main() {
+    local perl_pid
+    read perl_pid < <(print_on_winch "${REDRAW_KEY}${REDRAW_KEY}")
+
+    trap "kill ${perl_pid}" EXIT
+
+    start_ueberzug
+
+    ls ~/.pornhub/*.json |
+    fzf --preview "${CURRENT} draw_preview {}" \
+        --preview-window "up" \
+        --bind "${REDRAW_KEY}:toggle-preview+toggle-preview" \
+        --multi \
+        "${@}"
+}
+
+
+"$@"

@@ -1,0 +1,233 @@
+#!/usr/bin/env zunit
+
+@setup {
+    export PH_MARKS_HOME=/tmp/pornhub
+    # Cleanup and recreate database
+    rm -rf ${PH_MARKS_HOME}/
+    mkdir --parents ${PH_MARKS_HOME}
+    # Load a script to set up the test environment
+    load ../src/ph-marks.zsh
+    load ../bin/ph
+}
+
+
+@test 'Slugify: .ph_slugify' {
+    assert "$(.ph_slugify 'Some random text')" same_as 'some_random_text'
+}
+
+
+@test 'Viewkeys stream: .ph_files_viewkeys' {
+    # When no files in library
+    assert "$(.ph_files_viewkeys)" is_empty
+    # Imitate two videos in library
+    touch "${PH_MARKS_HOME}"/ph123456789abc{d,e}.{jpg,info.json}
+    # Zunit doesn't allow multiline string comparison
+    assert "$(.ph_files_viewkeys | tr '\n' ':')" same_as \
+        'ph123456789abcd:ph123456789abce:'
+}
+
+
+@test 'Validating stdin viewkeys: .ph_stdin_viewkeys' {
+    # No stdin
+    assert "$(.ph_stdin_viewkeys || echo fail)" same_as \
+        fail
+    # Empty input
+    assert "$(echo | .ph_stdin_viewkeys 2>&1)" same_as \
+        "Could not parse \"\""
+    # Test single viewkey
+    local single_viewkey=$(echo ph123456789abcd)
+    assert "$(.ph_stdin_viewkeys <<<"${single_viewkey}" | tr '\n' ':')" same_as \
+        'ph123456789abcd:'
+    # Test two viewkeys
+    local two_viewkeys=$(echo "ph123456789abcd\nph123456789abce")
+    assert "$(.ph_stdin_viewkeys <<<"${two_viewkeys}" | tr '\n' ':')" same_as \
+        'ph123456789abcd:ph123456789abce:'
+}
+
+
+@test 'Streaming arguments: .ph_args_viewkeys' {
+    # Empty input
+    assert "$(.ph_args_viewkeys)" is_empty
+    # Test single viewkey
+    local single_viewkey=$(echo ph123456789abcd)
+    assert "$(.ph_args_viewkeys ph123456789abcd | tr '\n' ':')" same_as \
+        'ph123456789abcd:'
+    # Test two viewkeys
+    assert "$(.ph_args_viewkeys ph123456789abcd ph123456789abce | tr '\n' ':')" same_as \
+        'ph123456789abcd:ph123456789abce:'
+}
+
+
+# @test 'Streaming in different ways: .ph_viewkeys' {
+#     # Test empty
+#     assert "$(.ph_viewkeys)" is_empty
+#     # Test args
+#     assert "$(.ph_viewkeys args ph123456789abcd | tr '\n' ':')" same_as \
+#         'ph123456789abcd:'
+#     # Test stdin
+#     local viewkeys=$(echo "ph000000000abcd\nph000000000abce")
+#     assert "$(.ph_viewkeys stdin <<<"${viewkeys}" | tr '\n' ':')" same_as \
+#         'ph000000000abcd:ph000000000abce:'
+#     # Test fs
+#     touch "${PH_MARKS_HOME}"/ph123456789abc{d,e}.{jpg,info.json}
+#     assert "$(.ph_viewkeys fs | tr '\n' ':')" same_as \
+#         'ph123456789abcd:ph123456789abce:'
+#     # Test stdin_or_fs w/ stdin
+#     assert "$(.ph_viewkeys stdin_or_fs <<<"${viewkeys}" | tr '\n' ':')" same_as \
+#         'ph000000000abcd:ph000000000abce:'
+#     # Test stdin_or_fs w/o stdin
+#     assert "$(.ph_viewkeys stdin_or_fs | tr '\n' ':')" same_as \
+#         'ph123456789abcd:ph123456789abce:'
+# }
+
+
+# #############################################################################
+
+@test 'Intersections: .ph_count_intersections' {
+    local set1=$(echo "a\nb\nc")
+    local set2=$(echo "c\nb\nd")
+    assert "$(.ph_count_intersections "${set1}" "${set2}")" same_as 2
+}
+
+
+@test 'Arguments to link parsing: .ph_parse_argument_to_link' {
+    # Valid link
+    local link='https://www.pornhub.com/view_video.php?viewkey=ph123456789abcd'
+    assert "$(.ph_parse_argument_to_link "${link}")" same_as \
+           "${link}"
+    # Valid viewkey
+    local viewkey='ph123456789abcd'
+    assert "$(.ph_parse_argument_to_link "${viewkey}")" same_as \
+           "https://www.pornhub.com/view_video.php?viewkey=${viewkey}"
+    # Invalid link
+    local link='https://www.pornhub.com/categories'
+    assert "$(.ph_parse_argument_to_link "${link}"    || echo $?)" same_as 1
+    # Invalid viewkey
+    local viewkey='ph123456789wxyz'
+    assert "$(.ph_parse_argument_to_link "${viewkey}" || echo $?)" same_as 1
+}
+
+
+@test 'Single video adding: .ph_add_single' {
+    # Invalid viewkey
+    assert "$(.ph_add_single ph123456789wxyz 2>&1)" same_as \
+        "Impossible viewkey/video link: ph123456789wxyz"
+    # Non-existent video
+    assert "$(.ph_add_single ph5ddb8051f0e36 2>&1)" is_empty
+    # Valid link
+    .ph_add_single ph5ddb8051f0d36
+    assert "${PH_MARKS_HOME}/ph5ddb8051f0d36.jpg" exists
+    assert "${PH_MARKS_HOME}/ph5ddb8051f0d36.info.json" exists
+}
+
+
+@test 'Multiple video adding: .ph_add' {
+    # Valid and invalid link
+    assert "$(.ph_add ph5bd3a1b1527b3 ph5ddb8051f0e36 2>&1)" same_as \
+        "Could not parse and download \"ph5ddb8051f0e36\""
+    assert "${PH_MARKS_HOME}/ph5bd3a1b1527b3.jpg" exists
+    assert "${PH_MARKS_HOME}/ph5bd3a1b1527b3.info.json" exists
+}
+
+
+@test 'Delete functionality: .ph_delete' {
+    # Create files
+    touch "${PH_MARKS_HOME}"/ph123456789abc{d,e}.{jpg,info.json}
+    # Delete one of them w/ argument
+    .ph_delete ph123456789abcd 2>/dev/null
+    # Check only one file is deleted
+    assert "${PH_MARKS_HOME}/ph123456789abce.jpg"       exists
+    assert "${PH_MARKS_HOME}/ph123456789abce.info.json" exists
+    # check the other file is not
+    assert "$(
+        files=(${PH_MARKS_HOME}/ph123456789abcd*(N))
+        (($#files == 0)) && echo no_files
+    )" same_as \
+        no_files
+    # Delete the last file
+    echo ph123456789abce | .ph_delete ph123456789abcd 2>/dev/null
+    assert "$([[ -z "$(ls -A "${PH_MARKS_HOME}")" ]] && echo empty)" same_as \
+        empty
+}
+
+
+@test 'Keys: .ph_keys' {
+    # Download a bunch of videos
+    local videos=(
+        ph5e351b390115f  # anal asian exclusive fisting hd_porn milf old/young
+                         # pissing solo_female teen verified_amateurs
+        ph5e40229d02822  # amateur babe big_ass blowjob cumshot hd_porn
+                         # hardcore red_head rough_sex verified_amateurs
+        ph5e4d2e1d6063b  # big_dick blowjob ebony hd_porn pornstar small_tits
+                         # teen threesome toys
+    )
+    .ph_add "${videos[@]}"
+    # Library (all files)
+    assert "$(.ph_keys categories hd_porn | tr '\n' ':')" same_as \
+        'ph5e351b390115f:ph5e40229d02822:ph5e4d2e1d6063b:'
+    assert "$(.ph_keys categories anal rough_sex | tr '\n' ':')" same_as \
+        'ph5e351b390115f:ph5e40229d02822:'
+    assert "$(.ph_keys categories nonexistent | tr '\n' ':')" is_empty
+    # Stdin
+    assert "$(printf "%s\n" ph5e351b390115f ph5e40229d02822 | .ph_keys categories hd_porn | tr '\n' ':')" same_as \
+        'ph5e351b390115f:ph5e40229d02822:'
+}
+
+
+@test 'Priniting: .ph_pretty_print' {
+    # Download a bunch of videos
+    local videos=(
+        ph5e351b390115f  # "BOOOMB GAPE"
+        ph5e40229d02822  # "Lovely Babe Rough Sex and Deep Blowjob - Oral Creampie"
+        ph5e4d2e1d6063b  # "Brazzers - Two strap on ebony lesbians share white dick"
+    )
+    .ph_add "${videos[@]}"
+    # Test
+    assert "$(echo ph5e351b390115f | .ph_pretty_print)" same_as \
+        'https://www.pornhub.com/view_video.php?viewkey=ph5e351b390115f "BOOOMB GAPE"'
+    assert "$(.ph_pretty_print | tr '\n' ':')" same_as \
+        "$(printf "%s:" \
+            'https://www.pornhub.com/view_video.php?viewkey=ph5e351b390115f "BOOOMB GAPE"' \
+            'https://www.pornhub.com/view_video.php?viewkey=ph5e40229d02822 "Lovely Babe Rough Sex and Deep Blowjob - Oral Creampie"' \
+            'https://www.pornhub.com/view_video.php?viewkey=ph5e4d2e1d6063b "Brazzers - Two strap on ebony lesbians share white dick"' \
+        )"
+}
+
+
+@test 'Tilte search: .ph_title' {
+    # Download a bunch of videos
+    local videos=(
+        ph5e351b390115f  # "BOOOMB GAPE"
+        ph5e40229d02822  # "Lovely Babe Rough Sex and Deep Blowjob - Oral Creampie"
+        ph5e4d2e1d6063b  # "Brazzers - Two strap on ebony lesbians share white dick"
+    )
+    .ph_add "${videos[@]}"
+    # Test
+    assert "$(.ph_title rough sex)" same_as \
+        'ph5e40229d02822'
+}
+
+
+@test 'Browser identification: .ph_browser_cmd' {
+    # Remember default browser
+    local default_browser=$(BROWSER= xdg-settings get default-web-browser)
+    # Test no XDG, only $BROWSER
+    assert "$(PATH= BROWSER=brave .ph_browser_cmd)" same_as \
+        'brave --incognito'
+    # Test both XDG and $BROWSER
+    BROWSER= xdg-settings set default-web-browser firefox.desktop
+    assert "$(BROWSER=waterfox .ph_browser_cmd)" same_as \
+        'waterfox --private'
+    # Test no $BROWSER, only XDG
+    BROWSER= xdg-settings set default-web-browser firefox.desktop
+    assert "$(BROWSER= .ph_browser_cmd)" same_as \
+        'firefox --private'
+    # Test no $BROWSER, and no XDG
+    assert "$(PATH= BROWSER= .ph_browser_cmd 2>&1 || :)" same_as \
+        "No browser set via either XDG or \$BROWSER"
+    # Test unrecognized browser
+    assert "$(BROWSER=lynx .ph_browser_cmd 2>/dev/null || echo $?)" same_as \
+        1
+    # Set default browser back
+    BROWSER= xdg-settings set default-web-browser "${default_browser}"
+}
