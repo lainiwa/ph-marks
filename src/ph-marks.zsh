@@ -7,7 +7,9 @@ PH_MARKS_PARALLELIZATION=${PH_MARKS_PARALLELIZATION:-5}
     # Examples of viewkeys:
     # * ph5e42e83e8f8c2
     # * 1270734976
-    [[ ${1} =~ ^ph[0-9a-f]{13}$ || ${1} =~ ^[0-9]{10}$ ]]
+    [[ ${1} =~ ^ph[0-9a-f]{13}$ ||
+       ${1} =~ ^[0-9]{10}$
+    ]]
 }
 
 
