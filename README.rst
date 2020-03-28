@@ -10,22 +10,27 @@ Installation
 Dependencies
 ============
 
-+------------+-------------------------+-----------+-----------------------------+
-| Name       | Description             | Necessity | Note                        |
-+============+=========================+===========+=============================+
-| coreutils  | Basic command line tool | required  |                             |
-|            | in UNIX-like systems    |           |                             |
-+------------+-------------------------+-----------+-----------------------------+
-| jq         | JSON parser             | required  |                             |
-+------------+-------------------------+-----------+-----------------------------+
-| youtube-dl | Video (metadata)        | required  |                             |
-|            | downloader              |           |                             |
-+------------+-------------------------+-----------+-----------------------------+
-| fzf        | Fuzzy picker            | optional  | These two are required for  |
-+------------+-------------------------+-----------+ interactive video filtering |
-| ueberzug   | In-terminal image       | optional  |                             |
-|            | viewer                  |           |                             |
-+------------+-------------------------+-----------+-----------------------------+
++-------------+-------------------------+-----------+-----------------------------+
+| Name        | Description             | Necessity | Note                        |
++=============+=========================+===========+=============================+
+| coreutils   | Basic command line tool | required  |                             |
+|             | in UNIX-like systems    |           |                             |
++-------------+-------------------------+-----------+                             |
+| jq_         | JSON parser             | required  |                             |
++-------------+-------------------------+-----------+                             |
+| youtube-dl_ | Video (metadata)        | required  |                             |
+|             | downloader              |           |                             |
++-------------+-------------------------+-----------+-----------------------------+
+| fzf_        | Fuzzy picker            | optional  | These two are required for  |
++-------------+-------------------------+-----------+ interactive video filtering |
+| ueberzug_   | In-terminal image       | optional  |                             |
+|             | viewer                  |           |                             |
++-------------+-------------------------+-----------+-----------------------------+
+
+.. _jq: https://stedolan.github.io/jq/download/
+.. _youtube-dl: https://github.com/ytdl-org/youtube-dl#installation
+.. _fzf: https://github.com/junegunn/fzf/#installation
+.. _ueberzug: https://github.com/seebye/ueberzug#installation
 
 
 Install with your favourite zsh plugin manager::
