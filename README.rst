@@ -151,11 +151,6 @@ Examples
 Future Development
 ##################
 
-ToDo List
-=========
-
-* Add fzf+ueberzug interactive filter;
-
 Known Issues
 ============
 
