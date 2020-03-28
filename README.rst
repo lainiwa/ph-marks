@@ -7,9 +7,26 @@
 Installation
 ############
 
-Install required dependencies using your package manager::
+Dependencies
+============
 
-    sudo apt install curl jq youtube-dl
++------------+-------------------------+-----------+-----------------------------+
+| Name       | Description             | Necessity | Note                        |
++============+=========================+===========+=============================+
+| coreutils  | Basic command line tool | required  |                             |
+|            | in UNIX-like systems    |           |                             |
++------------+-------------------------+-----------+-----------------------------+
+| jq         | JSON parser             | required  |                             |
++------------+-------------------------+-----------+-----------------------------+
+| youtube-dl | Video (metadata)        | required  |                             |
+|            | downloader              |           |                             |
++------------+-------------------------+-----------+-----------------------------+
+| fzf        | Fuzzy picker            | optional  | These two are required for  |
++------------+-------------------------+-----------+ interactive video filtering |
+| ueberzug   | In-terminal image       | optional  |                             |
+|            | viewer                  |           |                             |
++------------+-------------------------+-----------+-----------------------------+
+
 
 Install with your favourite zsh plugin manager::
 
