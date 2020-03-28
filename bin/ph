@@ -172,9 +172,11 @@ _PH_VIEW_LINK='https://www.pornhub.com/view_video.php?viewkey='
     links=($(for viewkey in "${viewkeys[@]}"; do
         echo "${_PH_VIEW_LINK}${viewkey}"
     done))
-    local browser
-    browser=(${PH_MARKS_BROWSER_CMD:-$(.ph_browser_cmd)})
-    nohup ${browser[@]} ${links[@]} &>/dev/null &
+    if [[ -n "${links[*]}" ]]; then
+        local browser
+        browser=(${PH_MARKS_BROWSER_CMD:-$(.ph_browser_cmd)})
+        nohup ${browser[@]} ${links[@]} &>/dev/null &
+    fi
 }
 
 
