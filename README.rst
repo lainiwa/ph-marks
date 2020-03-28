@@ -10,28 +10,35 @@ Installation
 Dependencies
 ============
 
-+-------------+-------------------------+-----------+-----------------------------+
-| Name        | Description             | Necessity | Note                        |
-+=============+=========================+===========+=============================+
-| coreutils   | Basic command line tool | required  |                             |
-|             | in UNIX-like systems    |           |                             |
-+-------------+-------------------------+-----------+                             |
-| jq_         | JSON parser             | required  |                             |
-+-------------+-------------------------+-----------+                             |
-| youtube-dl_ | Video (metadata)        | required  |                             |
-|             | downloader              |           |                             |
-+-------------+-------------------------+-----------+-----------------------------+
-| fzf_        | Fuzzy picker            | optional  | These two are required for  |
-+-------------+-------------------------+-----------+ interactive video filtering |
-| ueberzug_   | In-terminal image       | optional  |                             |
-|             | viewer                  |           |                             |
-+-------------+-------------------------+-----------+-----------------------------+
+First of all you will need some dependencies to be present on your system for this plugin to work.
+
+Here is a table of them. The links will lead to the "install" section of each dependency.
+
++-------------+--------------------------+-----------+-----------------------------+
+| Name        | Description              | Necessity | Note                        |
++=============+==========================+===========+=============================+
+| coreutils   | Basic command line tools | required  |                             |
+|             | in UNIX-like systems     |           |                             |
++-------------+--------------------------+-----------+                             |
+| jq_         | JSON parser              | required  |                             |
++-------------+--------------------------+-----------+                             |
+| youtube-dl_ | Video (metadata)         | required  |                             |
+|             | downloader               |           |                             |
++-------------+--------------------------+-----------+-----------------------------+
+| fzf_        | Fuzzy picker             | optional  | These two are required for  |
++-------------+--------------------------+-----------+ interactive video filtering |
+| ueberzug_   | In-terminal image        | optional  |                             |
+|             | viewer                   |           |                             |
++-------------+--------------------------+-----------+-----------------------------+
 
 .. _jq: https://stedolan.github.io/jq/download/
 .. _youtube-dl: https://github.com/ytdl-org/youtube-dl#installation
 .. _fzf: https://github.com/junegunn/fzf/#installation
 .. _ueberzug: https://github.com/seebye/ueberzug#installation
 
+
+Plugin install
+==============
 
 Install with your favourite zsh plugin manager::
 
@@ -125,6 +132,9 @@ Examples
 | ph category webcam                        | :cinema::                         |
 +-------------------------------------------+-----------------------------------+
 | ph tag squirting                          | :whale::                          |
++-------------------------------------------+-----------------------------------+
+| ph tag squirting | ph fzf | ph open       | Interactively pick a :whale::     |
+|                                           | and watch it in browser           |
 +-------------------------------------------+-----------------------------------+
 | ph tag fake_taxi | ph open                | Search and open :taxi: in browser |
 +-------------------------------------------+-----------------------------------+
