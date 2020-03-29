@@ -1,4 +1,4 @@
-tap: false
+tap: true
 directories:
   tests: tests
   output: tests/_output
