@@ -1,3 +1,5 @@
+.. image:: https://github.com/lainiwa/ph-marks/workflows/CI/badge.svg
+    :target: https://github.com/lainiwa/ph-marks/actions?query=workflow%3ACI
 
 ============================================
 :kiss: Pornhub Bookmarks Manager at Your CLI
