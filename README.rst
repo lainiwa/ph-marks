@@ -149,16 +149,6 @@ Examples
 +-------------------------------------------+-----------------------------------+
 
 
-Future Development
-##################
-
-Known Issues
-============
-
-1. It requires **two** ``<TAB>`` presses to issue completions for the first time for whatever reason;
-2. Calling browser starts browser in foreground.
-
-
 License
 #######
 ph-marks source is published under the terms of the `MIT license <LICENSE>`_.
