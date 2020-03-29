@@ -23,9 +23,9 @@ jobs:
     - uses: actions/checkout@v2
 
     # Install apt'able dependencies
-    - name: Install jq and youtube-dl
+    - name: Install zsh, jq and youtube-dl
       run: |
-        sudo apt install jq youtube-dl
+        sudo apt install zsh jq youtube-dl
 
     - name: Install executables
       run: |
