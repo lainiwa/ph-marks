@@ -26,15 +26,15 @@ jobs:
     - name: Install jq and youtube-dl
       run: |
         sudo apt install jq youtube-dl
-    
+
     - name: Install executables
       run: |
         mkdir --parent --verbose ~/bin
         wget -qO- 'https://github.com/junegunn/fzf-bin/releases/download/0.21.0/fzf-0.21.0-linux_amd64.tgz' | tar xz -C ~/bin
         curl -L https://raw.githubusercontent.com/molovo/revolver/master/revolver > ~/bin/revolver
         curl -L https://github.com/zunit-zsh/zunit/releases/download/v0.8.2/zunit > ~/bin/zunit
-        
+
 
     - name: Run tests
       run: |
-        make test
+        PATH=${HOME}/bin make test
