@@ -37,4 +37,4 @@ jobs:
 
     - name: Run tests
       run: |
-        PATH=${HOME}/bin make test
+        PATH=${HOME}/bin:${PATH} make test
