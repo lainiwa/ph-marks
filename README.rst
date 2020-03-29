@@ -17,9 +17,9 @@ Here is a table of them. The links will lead to the "install" section of each de
 +-------------+--------------------------+-----------+-----------------------------+
 | Name        | Description              | Necessity | Note                        |
 +=============+==========================+===========+=============================+
-| coreutils   | Basic command line tools | required  |                             |
-|             | in UNIX-like systems     |           |                             |
-+-------------+--------------------------+-----------+                             |
+| coreutils   | Basic command line tools | required  | You are likely to already   |
+|             | in UNIX-like systems     |           | have them                   |
++-------------+--------------------------+-----------+-----------------------------+
 | jq_         | JSON parser              | required  |                             |
 +-------------+--------------------------+-----------+                             |
 | youtube-dl_ | Video (metadata)         | required  |                             |
