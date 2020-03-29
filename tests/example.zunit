@@ -58,29 +58,6 @@
 }
 
 
-# @test 'Streaming in different ways: .ph_viewkeys' {
-#     # Test empty
-#     assert "$(.ph_viewkeys)" is_empty
-#     # Test args
-#     assert "$(.ph_viewkeys args ph123456789abcd | tr '\n' ':')" same_as \
-#         'ph123456789abcd:'
-#     # Test stdin
-#     local viewkeys=$(echo "ph000000000abcd\nph000000000abce")
-#     assert "$(.ph_viewkeys stdin <<<"${viewkeys}" | tr '\n' ':')" same_as \
-#         'ph000000000abcd:ph000000000abce:'
-#     # Test fs
-#     touch "${PH_MARKS_HOME}"/ph123456789abc{d,e}.{jpg,info.json}
-#     assert "$(.ph_viewkeys fs | tr '\n' ':')" same_as \
-#         'ph123456789abcd:ph123456789abce:'
-#     # Test stdin_or_fs w/ stdin
-#     assert "$(.ph_viewkeys stdin_or_fs <<<"${viewkeys}" | tr '\n' ':')" same_as \
-#         'ph000000000abcd:ph000000000abce:'
-#     # Test stdin_or_fs w/o stdin
-#     assert "$(.ph_viewkeys stdin_or_fs | tr '\n' ':')" same_as \
-#         'ph123456789abcd:ph123456789abce:'
-# }
-
-
 # #############################################################################
 
 @test 'Intersections: .ph_count_intersections' {
