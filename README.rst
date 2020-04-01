@@ -1,5 +1,11 @@
-.. image:: https://github.com/lainiwa/ph-marks/workflows/CI/badge.svg
-    :target: https://github.com/lainiwa/ph-marks/actions?query=workflow%3ACI
+
+|status| |licence|
+
+.. |status| image:: https://github.com/lainiwa/ph-marks/workflows/CI/badge.svg
+.. _status: https://github.com/lainiwa/ph-marks/actions?query=workflow%3ACI
+
+.. |licence| image:: https://img.shields.io/badge/license-MIT-blue.svg
+.. _licence: LICENCE
 
 ============================================
 :kiss: Pornhub Bookmarks Manager at Your CLI
@@ -149,8 +155,3 @@ Examples
 +-------------------------------------------+-----------------------------------+
 | ph tag mexican ukrainian | ph cat big_ass | (:mexico: ∪ :ukraine:) ∩ :peach:  |
 +-------------------------------------------+-----------------------------------+
-
-
-License
-#######
-ph-marks source is published under the terms of the `MIT license <LICENSE>`_.
