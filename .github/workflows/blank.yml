@@ -38,4 +38,4 @@ jobs:
 
     - name: Run tests
       run: |
-        PATH=${HOME}/bin:${PATH} _PH_MARKS_PLUGIN_DIR=${PWD} unbuffer make test </dev/null
+        PATH=${HOME}/bin:${PATH} _PH_MARKS_PLUGIN_DIR=${PWD} make test
