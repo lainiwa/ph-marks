@@ -1,7 +1,7 @@
 addons:
   apt:
     packages:
-      zsh
+      zsh expect jq youtube-dl
 install:
   - mkdir .bin
   - curl -L https://github.com/zunit-zsh/zunit/releases/download/v0.8.2/zunit > .bin/zunit
@@ -10,4 +10,4 @@ install:
 before_script:
   - chmod u+x .bin/{color,revolver,zunit}
   - export PATH="$PWD/.bin:$PATH"
-script: zunit
+script: make test
