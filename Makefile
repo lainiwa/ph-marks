@@ -34,4 +34,4 @@ check-all-execs: check-user-execs check-testing-execs
 
 .PHONY: test
 test:
-	zunit run --verbose
+	unbuffer zunit run --verbose </dev/null
