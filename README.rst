@@ -13,6 +13,13 @@
 
 ``ph-marks`` is a zsh plugin, that will let you bookmark pornhub videos. It will **not** download the videos, only their meta information and thumbnails.
 
+.. raw:: html
+
+   <img width="80%"
+        alt="Screenshot"
+        src="https://raw.githubusercontent.com/lainiwa/ph-marks/images/screenshot.png"
+   />
+
 Installation
 ############
 
