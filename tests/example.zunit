@@ -159,10 +159,15 @@
         ph5e4d2e1d6063b  # "Brazzers - Two strap on ebony lesbians share white dick"
     )
     .ph_add "${videos[@]}"
+    # String with file sourcing instructions
+    local sourcing='source src/ph-marks.zsh && source bin/ph'
     # Test
-    assert "$(echo ph5e351b390115f | .ph_pretty_print)" same_as \
+    local pretty_command="${sourcing} && echo ph5e351b390115f | .ph_pretty_print"
+    assert "$(unbuffer zsh -c "${pretty_command}")" same_as \
         'https://www.pornhub.com/view_video.php?viewkey=ph5e351b390115f "BOOOMB GAPE"'
-    assert "$(.ph_pretty_print | tr '\n' ':')" same_as \
+    # Test 2
+    local pretty_command="${sourcing} && .ph_pretty_print"
+    assert "$(unbuffer zsh -c "${pretty_command}" | tr '\n' ':')" same_as \
         "$(printf "%s:" \
             'https://www.pornhub.com/view_video.php?viewkey=ph5e351b390115f "BOOOMB GAPE"' \
             'https://www.pornhub.com/view_video.php?viewkey=ph5e40229d02822 "Lovely Babe Rough Sex and Deep Blowjob - Oral Creampie"' \
