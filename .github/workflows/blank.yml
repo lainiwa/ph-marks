@@ -23,9 +23,13 @@ jobs:
     - uses: actions/checkout@v2
 
     # Install apt'able dependencies
-    - name: Install zsh, expect, jq and youtube-dl
+    - name: Install zsh, expect, jq
       run: |
-        sudo apt install zsh expect jq youtube-dl
+        sudo apt install zsh expect jq
+
+    - name: Install youtube-dl
+      run: |
+        pip3 install --user youtube-dl
 
     - name: Install executables
       run: |
@@ -35,10 +39,9 @@ jobs:
         curl -L https://github.com/zunit-zsh/zunit/releases/download/v0.8.2/zunit > ~/bin/zunit
         chmod +x ~/bin/*
 
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v2
 
     - name: Run tests
       run: |
-        PATH=${HOME}/bin:${PATH} _PH_MARKS_PLUGIN_DIR=${PWD} make test
-
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v2
+        PATH=${HOME}/.local/bin:${HOME}/bin:${PATH} _PH_MARKS_PLUGIN_DIR=${PWD} make test

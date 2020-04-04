@@ -6,7 +6,7 @@
     rm -rf ${PH_MARKS_HOME}/
     mkdir --parents ${PH_MARKS_HOME}
     # Load a script to set up the test environment
-    load ../src/ph-marks.zsh
+    load ../ph-marks.plugin.zsh
     load ../bin/ph
 }
 

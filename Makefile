@@ -3,6 +3,7 @@ EXECS_ESSENTIAL = sort uniq jq youtube-dl
 EXECS_OPTIONAL = fzf ueberzug
 EXECS_TESTING = zunit
 
+SHELL:=/bin/zsh
 
 .PHONY: check-essential-execs
 check-essential-execs:
