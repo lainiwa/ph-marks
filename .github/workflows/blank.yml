@@ -39,3 +39,6 @@ jobs:
     - name: Run tests
       run: |
         PATH=${HOME}/bin:${PATH} _PH_MARKS_PLUGIN_DIR=${PWD} make test
+
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v2
