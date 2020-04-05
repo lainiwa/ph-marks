@@ -45,6 +45,7 @@ _PH_VIEW_LINK='https://www.pornhub.com/view_video.php?viewkey='
                --skip-download \
                --no-overwrites \
                --quiet \
+               --socket-timeout 20 \
                --output "${PH_MARKS_HOME}/${viewkey}" \
                -- "${link}" 2>/dev/null
 }
