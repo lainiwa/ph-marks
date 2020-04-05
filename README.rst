@@ -37,9 +37,12 @@ Here is a table of them. The links will lead to the "install" section of each de
 |             | in UNIX-like systems     |           | have them                   |
 +-------------+--------------------------+-----------+-----------------------------+
 | jq_         | JSON parser              | required  |                             |
-+-------------+--------------------------+-----------+                             |
-| youtube-dl_ | Video (metadata)         | required  |                             |
-|             | downloader               |           |                             |
++-------------+--------------------------+-----------+-----------------------------+
+| youtube-dl_ | Video (metadata)         | required  | It is best to install the   |
+|             | downloader               |           | latest version with ``pip`` |
+|             |                          |           | as older version might lag  |
+|             |                          |           | behind pornhub most recent  |
+|             |                          |           | changes                     |
 +-------------+--------------------------+-----------+-----------------------------+
 | fzf_        | Fuzzy picker             | optional  | These two are required for  |
 +-------------+--------------------------+-----------+ interactive video filtering |
