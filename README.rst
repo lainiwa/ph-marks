@@ -165,3 +165,8 @@ Examples
 +-------------------------------------------+-----------------------------------+
 | ph tag mexican ukrainian | ph cat big_ass | (:mexico: ∪ :ukraine:) ∩ :peach:  |
 +-------------------------------------------+-----------------------------------+
+
+Feedback
+########
+
+If you have found a bug, file a `bug report <https://github.com/zdharma/zinit/issues/new?template=bug_report.md>`_.
