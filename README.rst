@@ -169,4 +169,4 @@ Examples
 Feedback
 ########
 
-If you have found a bug, file a `bug report <https://github.com/zdharma/zinit/issues/new?template=bug_report.md>`_.
+If you have found a bug, file a `bug report <https://github.com/lainiwa/ph-marks/issues/new?template=bug_report.md>`_.
