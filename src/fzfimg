@@ -13,8 +13,6 @@ logg() {
 
 
 start_ueberzug() {
-    logg "========= DAEMON ========="
-
     mkfifo "${UEBERZUG_FIFO}"
     ueberzug layer --parser simple --silent <"${UEBERZUG_FIFO}" &
     # prevent EOF
@@ -41,8 +39,6 @@ draw_preview() {
         scaling_position_y "0.5"
         path "${file}"
     )
-
-    logg "DRAW: <${cmds[*]}>"
 
     IFS=$'\t'; cat <<<"${cmds[*]}" >"${UEBERZUG_FIFO}"
 }
