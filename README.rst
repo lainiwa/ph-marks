@@ -8,7 +8,7 @@
 .. _licence: LICENCE
 
 ============================================
-:kiss: Pornhub Bookmarks Manager at Your CLI
+:kiss: Pornhub Bookmarks at Your CLI
 ============================================
 
 ``ph-marks`` is a zsh plugin, that will let you bookmark pornhub videos. It will **not** download the videos, only their meta information and thumbnails.
