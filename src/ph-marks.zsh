@@ -3,6 +3,20 @@ PH_MARKS_HOME=${PH_MARKS_HOME:-${HOME}/.pornhub}
 PH_MARKS_PARALLELIZATION=${PH_MARKS_PARALLELIZATION:-5}
 
 
+.ph_parse_json() {
+    local query=${1}
+    local file=${2}
+    local rez
+    if (( ${+commands[query-json]} )); then
+        rez=$(query-json -c "${query}" -- "${file}")
+        rez=${rez#\"}
+        rez=${rez%\"}
+        <<<"${rez}"
+    else
+        jq --raw-output "${query}" -- "${file}"
+    fi
+}
+
 .ph_is_viewkey() {
     # Examples of viewkeys:
     # * ph5e42e83e8f8c2

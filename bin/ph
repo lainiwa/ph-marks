@@ -91,7 +91,7 @@ _PH_VIEW_LINK='https://www.pornhub.com/view_video.php?viewkey='
     # How much the video matches the categories we search
     while read -r viewkey; do
         # Categories listed in current file
-        categories_in_file=$(jq --raw-output ".${keys} | .[]" -- "${PH_MARKS_HOME}/${viewkey}.info.json")
+        categories_in_file=$(.ph_parse_json ".${keys} | .[]" "${PH_MARKS_HOME}/${viewkey}.info.json")
         categories_in_file=$(.ph_slugify "${categories_in_file}")
         # Get intersection of categories we search
         # and categories we have listed in file
@@ -111,7 +111,7 @@ _PH_VIEW_LINK='https://www.pornhub.com/view_video.php?viewkey='
         while read -r video_id; do
             printf '%s %s\n' \
                 "${_PH_VIEW_LINK}${video_id}" \
-                "$(jq '.title' -- "${PH_MARKS_HOME}/${video_id}.info.json")"
+                "$(.ph_parse_json '.title' "${PH_MARKS_HOME}/${video_id}.info.json")"
         done
     else
         cat
@@ -129,7 +129,7 @@ _PH_VIEW_LINK='https://www.pornhub.com/view_video.php?viewkey='
     # How much the video matches the categories we search
     while read -r viewkey; do
         # Categories listed in current file
-        title=$(jq --raw-output '.title' -- "${PH_MARKS_HOME}/${viewkey}.info.json")
+        title=$(.ph_parse_json '.title' "${PH_MARKS_HOME}/${viewkey}.info.json")
         title=$(.ph_slugify "${title}")
 
         if [[ ${title} =~ "${search}" ]]; then

@@ -6,6 +6,7 @@ readonly CURRENT=$(readlink -f "${BASH_SOURCE:-$0}")
 readonly REDRAW_KEY="µ"
 declare -r -x UEBERZUG_FIFO=${UEBERZUG_FIFO:-$(mktemp --dry-run --suffix "fzf-x-ueberzug")}
 
+source "${_PH_MARKS_PLUGIN_DIR}/src/ph-marks.zsh"
 
 logg() {
     echo "log> $*" >> ~/tmp/log
@@ -69,7 +70,7 @@ main() {
     start_ueberzug
 
     for file in "${PH_MARKS_HOME}"/*.jpg; do
-        echo "${file}" "$(jq --raw-output '.title' -- "${file:r}.info.json")"
+        echo "${file}" "$(.ph_parse_json '.title' "${file:r}.info.json")"
     done |
 
     fzf --preview "${CURRENT} draw_preview {}" \
