@@ -36,7 +36,10 @@ Here is a table of them. The links will lead to the "install" section of each de
 | coreutils   | Basic command line tools | required  | You are likely to already   |
 |             | in UNIX-like systems     |           | have them                   |
 +-------------+--------------------------+-----------+-----------------------------+
-| jq_         | JSON parser              | required  |                             |
+| jq_ or      | JSON parser              | required  | jq is more likely to be     |
+| query-json_ |                          |           | present in your repo.       |
+|             |                          |           | However, query-json is a    |
+|             |                          |           | faster alternative.         |
 +-------------+--------------------------+-----------+-----------------------------+
 | youtube-dl_ | Video (metadata)         | required  | It is best to install the   |
 |             | downloader               |           | latest version with ``pip`` |
@@ -51,6 +54,7 @@ Here is a table of them. The links will lead to the "install" section of each de
 +-------------+--------------------------+-----------+-----------------------------+
 
 .. _jq: https://stedolan.github.io/jq/download/
+.. _query-json: https://github.com/davesnx/query-json#installation
 .. _youtube-dl: https://github.com/ytdl-org/youtube-dl#installation
 .. _fzf: https://github.com/junegunn/fzf/#installation
 .. _ueberzug: https://github.com/seebye/ueberzug#installation
